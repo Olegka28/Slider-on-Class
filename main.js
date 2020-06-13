@@ -15,6 +15,8 @@ class Slider {
         this.sliderTrack.style.transition = `transform ${animationTime}ms`;
         this.currentSlide = 0;
         this.sliderTrack.className = 'slider-track';
+        this.createArrowForSlide = new Arrow();
+        this.createPaginationForSlide = new Pagination();
 
         this.sliderTrack.innerHTML = slider.innerHTML;
         slider.innerHTML = '';
@@ -31,11 +33,11 @@ class Slider {
         this.setElementsSizes();
 
         if (arrows) {
-            this.createArrows(slider);
+            this.createArrowForSlide.createArrows(slider);
         }
 
         if (pagination) {
-            this.paginationContainer = this.createPagination({ slider, slidesCount: this.slidesCount });
+            this.paginationContainer = this.createPaginationForSlide.createPagination({ slider, slidesCount: this.slidesCount });
         }
 
         this.handleAutoPlay();
@@ -106,13 +108,32 @@ class Slider {
             this.slideTo(slideToNum);
         }
     }
-
     handleWindowResize(slider) {
         this.slideWidth = slider.clientWidth;
         this.trackWidth = this.slideWidth * this.slidesCount;
         this.setElementsSizes();
     }
+}
 
+
+class Arrow {
+    createArrows(slider) {
+        this.leftArrow = document.createElement('button');
+        this.leftArrow.setAttribute('data-slide-to', '-1');
+        this.leftArrow.className = 'slider-arrow slider-left-arrow';
+        this.leftArrow.textContent = '<';
+    
+        this.rightArrow = document.createElement('button');
+        this.rightArrow.setAttribute('data-slide-to', '1');
+        this.rightArrow.className = 'slider-arrow slider-right-arrow';
+        this.rightArrow.textContent = '>';
+    
+        slider.append(this.leftArrow);
+        slider.append(this.rightArrow);
+    }
+}
+
+class Pagination {
     createPagination({ slider, slidesCount }) {
         this.container = document.createElement('ul');
         this.container.className = 'slider-pagination-container';
@@ -130,24 +151,7 @@ class Slider {
         slider.append(this.container);
         return this.container;
     }
-
-
-    createArrows(slider) {
-        this.leftArrow = document.createElement('button');
-        this.leftArrow.setAttribute('data-slide-to', '-1');
-        this.leftArrow.className = 'slider-arrow slider-left-arrow';
-        this.leftArrow.textContent = '<';
-    
-        this.rightArrow = document.createElement('button');
-        this.rightArrow.setAttribute('data-slide-to', '1');
-        this.rightArrow.className = 'slider-arrow slider-right-arrow';
-        this.rightArrow.textContent = '>';
-    
-        slider.append(this.leftArrow);
-        slider.append(this.rightArrow);
-    }
 }
-
 
 function each(collection, cb) {
     for (let index = 0; index < collection.length; index++) {
