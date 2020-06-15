@@ -9,14 +9,15 @@ class Slider {
         autoPlayTime = 4000,
         animationTime = 700
     }) {
+        this.slider = slider;
         this.autoPlay = autoPlay;
         this.autoPlayTime = autoPlayTime;
         this.sliderTrack = document.createElement('div');
         this.sliderTrack.style.transition = `transform ${animationTime}ms`;
         this.currentSlide = 0;
         this.sliderTrack.className = 'slider-track';
-        this.createArrowForSlide = new Arrow();
-        this.createPaginationForSlide = new Pagination();
+        this.arrowForSlide = new Arrow();
+        this.paginationForSlide = new Pagination();
 
         this.sliderTrack.innerHTML = slider.innerHTML;
         slider.innerHTML = '';
@@ -33,19 +34,19 @@ class Slider {
         this.setElementsSizes();
 
         if (arrows) {
-            this.createArrowForSlide.createArrows(slider);
+            this.arrowForSlide.createArrows(slider);
         }
 
         if (pagination) {
-            this.paginationContainer = this.createPaginationForSlide.createPagination({ slider, slidesCount: this.slidesCount });
+            this.paginationContainer = this.paginationForSlide.createPagination({ slider, slidesCount: this.slidesCount });
         }
 
         this.handleAutoPlay();
 
-
-        slider.addEventListener('click', (event) => this.handleSliderClick(event));
-
-        window.addEventListener('resize', () => this.handleWindowResize(slider));
+        this.handleSliderClick = this.handleSliderClick.bind(this);
+        slider.addEventListener('click', this.handleSliderClick);
+        this.handleWindowResize = this.handleWindowResize.bind(this, slider);
+        window.addEventListener('resize', this.handleWindowResize);
     }
 
     handleAutoPlay() {
@@ -108,7 +109,7 @@ class Slider {
             this.slideTo(slideToNum);
         }
     }
-    handleWindowResize(slider) {
+    handleWindowResize(slider){
         this.slideWidth = slider.clientWidth;
         this.trackWidth = this.slideWidth * this.slidesCount;
         this.setElementsSizes();
